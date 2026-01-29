@@ -1,4 +1,4 @@
-#include "../hls/qaoa.hpp"
+#include "qaoa.hpp"
 # include <iostream>
 #include <cmath>
 #include <limits>
