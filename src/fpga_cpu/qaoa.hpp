@@ -107,9 +107,10 @@ bool is_valid_onehot(uint32_t s);
  * Applies the Cost Unitary U_C(gamma) = exp(-i * gamma * H_C) to the state vector.
  */
 template<int N_CITY>
-void applyCost_hls(ComplexQ state[Config<N_CITY>::DIM], 
-                    const qfix d[N_CITY][N_CITY], 
-                    qfix gamma);
+void applyCost_hls(
+        ComplexQ state[Config<N_CITY>::DIM],
+        const qfix H_table[Config<N_CITY>::DIM],
+        qfix gamma);
 
 /**
  * Applies the Mixer Unitary U_B(beta) = \prod_q R_X(2*beta)_q to the state vector.
@@ -120,17 +121,20 @@ void applyMixer_hls(ComplexQ state[Config<N_CITY>::DIM],
 
 
 template<int N_CITY>
-qfix expectation_cost(ComplexQ state[Config<N_CITY>::DIM], 
-                        const qfix d[N_CITY][N_CITY], 
-                        uint32_t *best_state);
+qfix expectation_cost(
+        ComplexQ state[Config<N_CITY>::DIM],
+        const qfix H_table[Config<N_CITY>::DIM],
+        uint32_t* best_state);
 /**
  * Top-level function for a single QAOA layer (U_B * U_C). (HLS Entry Point)
  */
-template<int N_CITY, int P>
-void qaoaStep_hls(ComplexQ state[Config<N_CITY>::DIM],
-                  const qfix d[N_CITY][N_CITY],
-                  const qfix gamma[P],
-                  const qfix beta[P]);
+template<int N_CITY,int P>
+void qaoaStep_hls(
+        ComplexQ state[Config<N_CITY>::DIM],
+        const qfix d[N_CITY][N_CITY],
+        const qfix gamma[P],
+        const qfix beta[P],
+        qfix H_table[Config<N_CITY>::DIM]);
 
 extern "C"
 void qaoa_kernel(const qfix d[3][3],

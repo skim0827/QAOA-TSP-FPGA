@@ -154,11 +154,13 @@ void applyMixer_hls(
     static ComplexQ bufA[Config<N_CITY>::DIM];
     static ComplexQ bufB[Config<N_CITY>::DIM];
 
-#pragma HLS RESOURCE variable=bufA core=RAM_2P_BRAM
-#pragma HLS RESOURCE variable=bufB core=RAM_2P_BRAM
+#pragma HLS BIND_STORAGE variable=bufA type=ram_2p impl=bram
+#pragma HLS BIND_STORAGE variable=bufB type=ram_2p impl=bram
 
-    for(uint32_t k=0;k<Config<N_CITY>::DIM;k++)
+    for(uint32_t k=0;k<Config<N_CITY>::DIM;k++){
+        #pragma HLS PIPELINE II=1
         bufA[k]=state[k];
+    }
 
     ComplexQ* state_cur=bufA;
     ComplexQ* state_next=bufB;
@@ -170,9 +172,10 @@ void applyMixer_hls(
         for(int i=0;i<N_CITY;i++)
             for(int j=i+1;j<N_CITY;j++){
 
-                for(uint32_t k=0;k<Config<N_CITY>::DIM;k++)
+                for(uint32_t k=0;k<Config<N_CITY>::DIM;k++){
+                    #pragma HLS PIPELINE II=1
                     state_next[k]=state_cur[k];
-
+                }
                 uint32_t bit_i=1u<<(t*N_CITY+i);
                 uint32_t bit_j=1u<<(t*N_CITY+j);
                 uint32_t mask=bit_i|bit_j;
@@ -286,7 +289,6 @@ void qaoa_kernel(
 
 #pragma HLS BIND_STORAGE variable=state type=ram_2p impl=bram
 #pragma HLS BIND_STORAGE variable=H_table type=ram_2p impl=bram
-
     qaoaStep_hls<3,1>(state,d,gamma,beta,H_table);
 
     uint32_t dummy;
