@@ -3,21 +3,8 @@
 #pragma once
 
 
-#ifdef __VITIS_HLS__
-  #include <hls_math.h>
-  #include "ap_fixed.h"
-  typedef ap_fixed<32,12> qfix;
-  #define HLS_PIPELINE
-  #define HLS_UNROLL
-  #define HLS_DATAFLOW
-#else
-  #include <cmath>
-  #define HLS_PIPELINE
-  #define HLS_UNROLL
-  #define HLS_DATAFLOW
-  typedef double qfix;
-#endif
-
+typedef double qfix;
+#include <cmath>
 #include <cstdint>
 // Define PI since M_PI is not standard C++
 #ifndef M_PI
@@ -65,6 +52,7 @@ struct ComplexQ {
         qfix temp_re = re*o.re - im*o.im;
         qfix temp_im = re*o.im + im*o.re;
         re = temp_re;
+        im = temp_im;
         return *this;
     }
 };
